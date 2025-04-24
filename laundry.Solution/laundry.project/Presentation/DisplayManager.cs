@@ -4,7 +4,7 @@ using laundry.project.Entities;
 
 namespace laundry.project.Presentation
 {
-    class DisplayManager
+class DisplayManager
     {
         public void DicplayConfiguration(List<Machine> machines, Dictionary<int, string> map)
         {

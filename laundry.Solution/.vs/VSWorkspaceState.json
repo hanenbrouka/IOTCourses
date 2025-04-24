@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\laundry.project",
+    "\\laundry.project\\Business",
+    "\\laundry.project\\Entities",
+    "\\laundry.project\\Infrastructure",
+    "\\laundry.project\\Infrastructure\\Sender",
+    "\\laundry.project\\Presentation"
+  ],
+  "SelectedNode": "\\laundry.project\\Presentation\\Utilities.cs",
+  "PreviewInSolutionExplorer": false
+}

@@ -3,42 +3,74 @@ using laundry.project.Entities;
 using laundry.project.Infrastructure;
 using laundry.project.Infrastructure.Sender;
 using laundry.project.Presentation;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
-SetConsoleSizeToMax();
-"Reading config file...".WriteLineRight(ConsoleColor.Blue);
-
-"Reading config file...".WriteLineLeft(ConsoleColor.White);
-ConfigurationManager configService = new();
-DisplayManager displaySercice = new DisplayManager();
-"Config File Path : ".WriteLeft(ConsoleColor.White);
-string fileConfigFilePath=Console.ReadLine();
-"Config File Name : ".WriteLeft(ConsoleColor.White);
-string fileConfigFileName = Console.ReadLine();
-List<Machine> machines = configService.SetConfig(fileConfigFilePath +"\\"+ fileConfigFileName);
-SensorManager sensor = new SensorManager();
-ISender sender = new ConsoleSender();
-StateMachineManager.LancerStateMachine(machines, sensor, sender);
-displaySercice.DicplayConfiguration(machines,Structure.MapInputMachine);
-displaySercice.DicplayMenuPrincipale(machines, Structure.MapInputMachine);
-static void SetConsoleSizeToMax()
+namespace laundry.project
 {
-    try
+    class Program
     {
-        // Obtenir la taille maximale possible de la console
-        int maxWidth = Console.LargestWindowWidth;
-        int maxHeight = Console.LargestWindowHeight;
+        static void Main(string[] args)
+        {
+            SetConsoleSizeToMax();
+            "Reading configuration file...".WriteLineRight(ConsoleColor.Blue);
 
-        // Définir la taille de la fenêtre de la console
-        Console.SetWindowSize(maxWidth, maxHeight);
+            ConfigurationManager configService = new();
+            DisplayManager displayService = new DisplayManager();
 
-        // Définir la taille du tampon de la console
-        Console.SetBufferSize(maxWidth, maxHeight);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Erreur lors de la définition de la taille de la console : {ex.Message}");
+            "Configuration File Path: ".WriteLeft(ConsoleColor.White);
+            string fileConfigFilePath = Console.ReadLine();
+
+            "Configuration File Name: ".WriteLeft(ConsoleColor.White);
+            string fileConfigFileName = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(fileConfigFilePath) || string.IsNullOrWhiteSpace(fileConfigFileName))
+            {
+                Console.WriteLine("Invalid path or file name.");
+                return;
+            }
+
+            List<Machine> machines;
+            try
+            {
+                machines = configService.SetConfig(Path.Combine(fileConfigFilePath, fileConfigFileName));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading configuration: {ex.Message}");
+                return;
+            }
+
+            if (machines == null || machines.Count == 0)
+            {
+                Console.WriteLine("No machines were configured.");
+                return;
+            }
+
+            SensorManager sensor = new SensorManager();
+            ISender sender = new AzureSender();
+            
+
+            StateMachineManager.LancerStateMachine(machines, sensor, sender);
+            displayService.DicplayConfiguration(machines, Structure.MapInputMachine);
+            displayService.DicplayMenuPrincipale(machines, Structure.MapInputMachine);
+        }
+
+        static void SetConsoleSizeToMax()
+        {
+            try
+            {
+                int maxWidth = Console.LargestWindowWidth;
+                int maxHeight = Console.LargestWindowHeight;
+
+                Console.SetWindowSize(maxWidth, maxHeight);
+                Console.SetBufferSize(maxWidth, maxHeight);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error setting console size: {ex.Message}");
+            }
+        }
     }
 }
-
-

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace laundry.project.Entities
 {
-    internal class Message
+    public class Message
     {
         string _idMachine;
         DateTime _date;
